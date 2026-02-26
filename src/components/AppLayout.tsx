@@ -1,15 +1,29 @@
 import { useState, ReactNode } from "react";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 import { Cloud, Menu, X, LogOut } from "lucide-react";
 import ProjectSidebar from "./ProjectSidebar";
 
 interface AppLayoutProps {
   children: ReactNode;
-  selectedProjectId: string | null;
-  onSelectProject: (id: string | null) => void;
+  selectedProjectId?: string | null;
+  onSelectProject?: (id: string | null) => void;
+  showProjects?: boolean;
 }
 
-const AppLayout = ({ children, selectedProjectId, onSelectProject }: AppLayoutProps) => {
+const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+  cn(
+    "rounded-md px-2.5 py-1.5 text-xs sm:text-sm transition-colors duration-150",
+    isActive ? "bg-secondary text-brand" : "text-muted-foreground hover-tint",
+  );
+
+const AppLayout = ({
+  children,
+  selectedProjectId = null,
+  onSelectProject = () => {},
+  showProjects = true,
+}: AppLayoutProps) => {
   const { user, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -21,14 +35,16 @@ const AppLayout = ({ children, selectedProjectId, onSelectProject }: AppLayoutPr
           <Cloud className="h-5 w-5 text-brand" />
           <span className="text-base font-semibold tracking-tight">AfuCloud</span>
         </div>
-        <ProjectSidebar
-          selectedProjectId={selectedProjectId}
-          onSelectProject={onSelectProject}
-        />
+
+        {showProjects ? (
+          <ProjectSidebar selectedProjectId={selectedProjectId} onSelectProject={onSelectProject} />
+        ) : (
+          <div className="px-5 py-3 text-xs uppercase tracking-wider text-muted-foreground">Account</div>
+        )}
       </aside>
 
       {/* Mobile Drawer */}
-      {mobileMenuOpen && (
+      {showProjects && mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-foreground/10" onClick={() => setMobileMenuOpen(false)} />
           <aside className="relative flex h-full w-72 flex-col bg-background">
@@ -55,19 +71,27 @@ const AppLayout = ({ children, selectedProjectId, onSelectProject }: AppLayoutPr
       {/* Main */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="flex h-14 flex-shrink-0 items-center justify-between px-4 lg:px-6">
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="hover-tint rounded-md p-1.5 lg:hidden"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          <div className="hidden lg:block" />
+        <header className="flex h-14 flex-shrink-0 items-center justify-between gap-2 px-4 lg:px-6">
+          <div className="flex items-center gap-2">
+            {showProjects && (
+              <button onClick={() => setMobileMenuOpen(true)} className="hover-tint rounded-md p-1.5 lg:hidden">
+                <Menu className="h-5 w-5" />
+              </button>
+            )}
+            <nav className="flex items-center gap-1">
+              <NavLink to="/app" end className={navLinkClass}>Files</NavLink>
+              <NavLink to="/app/profile" className={navLinkClass}>Profile</NavLink>
+              <NavLink to="/app/settings" className={navLinkClass}>Settings</NavLink>
+              <NavLink to="/app/api" className={navLinkClass}>API</NavLink>
+            </nav>
+          </div>
+
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{user?.email}</span>
+            <span className="hidden text-sm text-muted-foreground sm:block">{user?.email}</span>
             <button
               onClick={signOut}
               className="hover-tint rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Sign out"
             >
               <LogOut className="h-4 w-4" />
             </button>
