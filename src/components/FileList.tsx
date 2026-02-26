@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Copy, Trash2, Eye, EyeOff, Upload, Key, FileIcon, Check } from "lucide-react";
@@ -35,6 +36,7 @@ const formatBytes = (bytes: number) => {
 const FileList = ({ projectId }: Props) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [files, setFiles] = useState<FileRecord[]>([]);
   const [project, setProject] = useState<Project | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -159,7 +161,8 @@ const FileList = ({ projectId }: Props) => {
           {files.map((file) => (
             <div
               key={file.id}
-              className="group flex items-center gap-3 rounded-md px-3 py-2.5 hover-tint"
+              onClick={() => navigate(`/app/file/${file.id}`)}
+              className="group flex items-center gap-3 rounded-md px-3 py-2.5 hover-tint cursor-pointer"
             >
               <FileIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
               <div className="flex-1 min-w-0">

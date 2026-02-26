@@ -12,6 +12,7 @@ import SettingsPage from "./pages/SettingsPage";
 import ApiPage from "./pages/ApiPage";
 import PublicFile from "./pages/PublicFile";
 import NotFound from "./pages/NotFound";
+import FileDetailPage from "./pages/FileDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/app" element={<ProtectedAppRoute><Dashboard /></ProtectedAppRoute>} />
+            <Route path="/app/file/:fileId" element={<ProtectedAppRoute><FileDetailPage /></ProtectedAppRoute>} />
             <Route path="/app/profile" element={<ProtectedAppRoute><ProfilePage /></ProtectedAppRoute>} />
             <Route path="/app/settings" element={<ProtectedAppRoute><SettingsPage /></ProtectedAppRoute>} />
             <Route path="/app/api" element={<ProtectedAppRoute><ApiPage /></ProtectedAppRoute>} />
