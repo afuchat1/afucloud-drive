@@ -2,8 +2,16 @@ import { useState, ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import { Cloud, Menu, X, LogOut } from "lucide-react";
+import { Cloud, Menu, X, LogOut, Shield } from "lucide-react";
 import ProjectSidebar from "./ProjectSidebar";
+import UserAvatar from "./UserAvatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -24,7 +32,7 @@ const AppLayout = ({
   onSelectProject = () => {},
   showProjects = true,
 }: AppLayoutProps) => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -83,19 +91,35 @@ const AppLayout = ({
               <NavLink to="/app/profile" className={navLinkClass}>Profile</NavLink>
               <NavLink to="/app/settings" className={navLinkClass}>Settings</NavLink>
               <NavLink to="/app/api" className={navLinkClass}>API</NavLink>
+              {isAdmin && (
+                <NavLink to="/app/admin" className={navLinkClass}>
+                  <span className="flex items-center gap-1">
+                    <Shield className="h-3.5 w-3.5" /> Admin
+                  </span>
+                </NavLink>
+              )}
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-muted-foreground sm:block">{user?.email}</span>
-            <button
-              onClick={signOut}
-              className="hover-tint rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
-              aria-label="Sign out"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="rounded-full ring-offset-background transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                <UserAvatar />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <div className="px-3 py-2">
+                <p className="text-sm font-medium truncate">
+                  {(user?.user_metadata?.full_name as string) || "User"}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={signOut} className="text-destructive">
+                <LogOut className="mr-2 h-4 w-4" /> Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </header>
 
         {/* Content */}
