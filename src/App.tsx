@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import ApiPage from "./pages/ApiPage";
+import AdminPage from "./pages/AdminPage";
 import PublicFile from "./pages/PublicFile";
 import NotFound from "./pages/NotFound";
 import FileDetailPage from "./pages/FileDetailPage";
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/app/profile" element={<ProtectedAppRoute><ProfilePage /></ProtectedAppRoute>} />
             <Route path="/app/settings" element={<ProtectedAppRoute><SettingsPage /></ProtectedAppRoute>} />
             <Route path="/app/api" element={<ProtectedAppRoute><ApiPage /></ProtectedAppRoute>} />
+            <Route path="/app/admin" element={<ProtectedAppRoute><AdminPage /></ProtectedAppRoute>} />
             <Route path="/f/:fileId" element={<PublicFile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -40,4 +42,3 @@ const App = () => (
 );
 
 export default App;
-

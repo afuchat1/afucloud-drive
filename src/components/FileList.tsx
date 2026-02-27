@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Copy, Trash2, Eye, EyeOff, Upload, Key, FileIcon, Check } from "lucide-react";
+import { Copy, Trash2, Eye, EyeOff, Upload, Key, FileIcon, Check, CloudUpload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface FileRecord {
@@ -42,6 +42,7 @@ const FileList = ({ projectId }: Props) => {
   const [uploading, setUploading] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
 
   const fetchData = async () => {
     const [{ data: proj }, { data: fileData }] = await Promise.all([
@@ -56,9 +57,8 @@ const FileList = ({ projectId }: Props) => {
     fetchData();
   }, [projectId]);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
+  const uploadFile = async (file: File) => {
+    if (!user) return;
     setUploading(true);
 
     const fileId = crypto.randomUUID();
@@ -88,22 +88,45 @@ const FileList = ({ projectId }: Props) => {
 
     setUploading(false);
     fetchData();
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+    if (!fileList) return;
+    for (const file of Array.from(fileList)) {
+      await uploadFile(file);
+    }
     e.target.value = "";
   };
 
-  const toggleVisibility = async (file: FileRecord) => {
+  const handleDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault();
+      setDragOver(false);
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      for (const file of droppedFiles) {
+        await uploadFile(file);
+      }
+    },
+    [user, projectId],
+  );
+
+  const toggleVisibility = async (file: FileRecord, e: React.MouseEvent) => {
+    e.stopPropagation();
     const newVis = file.visibility === "public" ? "private" : "public";
     await supabase.from("files").update({ visibility: newVis }).eq("id", file.id);
     fetchData();
   };
 
-  const deleteFile = async (file: FileRecord) => {
+  const deleteFile = async (file: FileRecord, e: React.MouseEvent) => {
+    e.stopPropagation();
     await supabase.storage.from("project-files").remove([file.storage_path]);
     await supabase.from("files").delete().eq("id", file.id);
     fetchData();
   };
 
-  const copyLink = async (file: FileRecord) => {
+  const copyLink = async (file: FileRecord, e: React.MouseEvent) => {
+    e.stopPropagation();
     const { data } = supabase.storage.from("project-files").getPublicUrl(file.storage_path);
     await navigator.clipboard.writeText(data.publicUrl);
     setCopiedId(file.id);
@@ -144,13 +167,26 @@ const FileList = ({ projectId }: Props) => {
         </div>
       </div>
 
-      {/* Upload area */}
-      <label className="mb-6 flex cursor-pointer items-center justify-center rounded-lg bg-secondary py-8 transition-colors duration-150 hover:bg-muted">
-        <input type="file" className="hidden" onChange={handleUpload} disabled={uploading} />
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Upload className="h-4 w-4" />
-          {uploading ? "Uploading..." : "Click to upload a file"}
-        </div>
+      {/* Upload area with drag & drop */}
+      <label
+        className={`mb-6 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed py-10 transition-colors duration-150 ${
+          dragOver
+            ? "border-primary bg-primary/5"
+            : "border-border bg-secondary hover:border-primary/40 hover:bg-muted"
+        }`}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+      >
+        <input type="file" className="hidden" onChange={handleUpload} disabled={uploading} multiple />
+        <CloudUpload className={`mb-2 h-8 w-8 ${dragOver ? "text-brand" : "text-muted-foreground/50"}`} />
+        <p className="text-sm text-muted-foreground">
+          {uploading ? "Uploading..." : "Drag & drop files here, or click to browse"}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground/60">Supports multiple files</p>
       </label>
 
       {/* File list */}
@@ -173,7 +209,7 @@ const FileList = ({ projectId }: Props) => {
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
-                  onClick={() => copyLink(file)}
+                  onClick={(e) => copyLink(file, e)}
                   className="hover-tint rounded p-1.5 text-muted-foreground hover:text-foreground transition-colors"
                   title="Copy link"
                 >
@@ -184,7 +220,7 @@ const FileList = ({ projectId }: Props) => {
                   )}
                 </button>
                 <button
-                  onClick={() => toggleVisibility(file)}
+                  onClick={(e) => toggleVisibility(file, e)}
                   className="hover-tint rounded p-1.5 text-muted-foreground hover:text-foreground transition-colors"
                   title="Toggle visibility"
                 >
@@ -195,7 +231,7 @@ const FileList = ({ projectId }: Props) => {
                   )}
                 </button>
                 <button
-                  onClick={() => deleteFile(file)}
+                  onClick={(e) => deleteFile(file, e)}
                   className="hover-tint rounded p-1.5 text-muted-foreground hover:text-destructive transition-colors"
                   title="Delete"
                 >
@@ -206,12 +242,6 @@ const FileList = ({ projectId }: Props) => {
           ))}
         </div>
       )}
-
-      {/* Mobile FAB */}
-      <label className="fixed bottom-6 right-6 z-40 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground lg:hidden">
-        <input type="file" className="hidden" onChange={handleUpload} disabled={uploading} />
-        <Upload className="h-5 w-5" />
-      </label>
     </div>
   );
 };
