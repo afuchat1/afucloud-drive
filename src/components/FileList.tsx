@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Copy, Trash2, Eye, EyeOff, Upload, Key, FileIcon, Check, CloudUpload } from "lucide-react";
+import { Copy, Trash2, Eye, EyeOff, Upload, Key, FileIcon, Check, CloudUpload, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
 
 interface FileRecord {
   id: string;
@@ -43,6 +44,8 @@ const FileList = ({ projectId }: Props) => {
   const [showApiKey, setShowApiKey] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [editingFileId, setEditingFileId] = useState<string | null>(null);
+  const [editFileName, setEditFileName] = useState("");
 
   const fetchData = async () => {
     const [{ data: proj }, { data: fileData }] = await Promise.all([
@@ -139,6 +142,12 @@ const FileList = ({ projectId }: Props) => {
       toast({ title: "API key copied" });
     }
   };
+  const renameFile = async (fileId: string) => {
+    if (!editFileName.trim()) return;
+    await supabase.from("files").update({ name: editFileName.trim() }).eq("id", fileId);
+    setEditingFileId(null);
+    fetchData();
+  };
 
   if (!project) return null;
 
@@ -202,12 +211,38 @@ const FileList = ({ projectId }: Props) => {
             >
               <FileIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm truncate">{file.name}</p>
+                {editingFileId === file.id ? (
+                  <input
+                    autoFocus
+                    value={editFileName}
+                    onChange={(e) => setEditFileName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") renameFile(file.id);
+                      if (e.key === "Escape") setEditingFileId(null);
+                    }}
+                    onBlur={() => renameFile(file.id)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full text-sm bg-transparent outline-none border-b border-primary"
+                  />
+                ) : (
+                  <p className="text-sm truncate">{file.name}</p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   {formatBytes(file.size)} · {file.visibility}
                 </p>
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingFileId(file.id);
+                    setEditFileName(file.name);
+                  }}
+                  className="hover-tint rounded p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                  title="Rename"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
                 <button
                   onClick={(e) => copyLink(file, e)}
                   className="hover-tint rounded p-1.5 text-muted-foreground hover:text-foreground transition-colors"

@@ -24,6 +24,8 @@ import {
   FileText,
   FileVideo,
   FileAudio,
+  Sparkles,
+  Pencil,
 } from "lucide-react";
 
 interface FileRecord {
@@ -69,38 +71,25 @@ const FileDetailPage = () => {
   const [copied, setCopied] = useState(false);
   const [publicUrl, setPublicUrl] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
+  const [summary, setSummary] = useState<string | null>(null);
+  const [summarizing, setSummarizing] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState("");
 
   useEffect(() => {
     if (!fileId) return;
     (async () => {
-      const { data: f } = await supabase
-        .from("files")
-        .select("*")
-        .eq("id", fileId)
-        .single();
-
-      if (!f) {
-        setLoading(false);
-        return;
-      }
+      const { data: f } = await supabase.from("files").select("*").eq("id", fileId).single();
+      if (!f) { setLoading(false); return; }
       setFile(f);
+      setNameValue(f.name);
 
-      const { data: p } = await supabase
-        .from("projects")
-        .select("id, name")
-        .eq("id", f.project_id)
-        .single();
+      const { data: p } = await supabase.from("projects").select("id, name").eq("id", f.project_id).single();
       if (p) setProject(p);
 
-      const { data: urlData } = supabase.storage
-        .from("project-files")
-        .getPublicUrl(f.storage_path);
+      const { data: urlData } = supabase.storage.from("project-files").getPublicUrl(f.storage_path);
       setPublicUrl(urlData.publicUrl);
-
-      if (f.type?.startsWith("image/")) {
-        setPreviewUrl(urlData.publicUrl);
-      }
-
+      if (f.type?.startsWith("image/")) setPreviewUrl(urlData.publicUrl);
       setLoading(false);
     })();
   }, [fileId]);
@@ -129,19 +118,38 @@ const FileDetailPage = () => {
 
   const downloadFile = async () => {
     if (!file) return;
-    const { data, error } = await supabase.storage
-      .from("project-files")
-      .download(file.storage_path);
-    if (error || !data) {
-      toast({ title: "Download failed", variant: "destructive" });
-      return;
-    }
+    const { data, error } = await supabase.storage.from("project-files").download(file.storage_path);
+    if (error || !data) { toast({ title: "Download failed", variant: "destructive" }); return; }
     const url = URL.createObjectURL(data);
     const a = document.createElement("a");
     a.href = url;
     a.download = file.name;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const summarizeFile = async () => {
+    if (!file) return;
+    setSummarizing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-summarize", {
+        body: { fileName: file.name, fileType: file.type, fileSize: file.size },
+      });
+      if (error) throw error;
+      setSummary(data.summary);
+    } catch (e: any) {
+      toast({ title: "Summarization failed", description: e.message, variant: "destructive" });
+    } finally {
+      setSummarizing(false);
+    }
+  };
+
+  const saveFileName = async () => {
+    if (!file || !nameValue.trim()) return;
+    await supabase.from("files").update({ name: nameValue.trim() }).eq("id", file.id);
+    setFile({ ...file, name: nameValue.trim() });
+    setEditingName(false);
+    toast({ title: "File renamed" });
   };
 
   const Icon = file ? getFileIcon(file.type) : FileIcon;
@@ -172,7 +180,6 @@ const FileDetailPage = () => {
   return (
     <AppLayout showProjects={false}>
       <div className="mx-auto max-w-3xl animate-fade-in space-y-6">
-        {/* Back */}
         <button
           onClick={() => navigate("/app")}
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -180,13 +187,35 @@ const FileDetailPage = () => {
           <ArrowLeft className="h-4 w-4" /> Back to files
         </button>
 
-        {/* Header */}
+        {/* Header with editable name */}
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-secondary">
             <Icon className="h-6 w-6 text-muted-foreground" />
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className="text-xl font-semibold truncate">{file.name}</h1>
+            {editingName ? (
+              <input
+                autoFocus
+                value={nameValue}
+                onChange={(e) => setNameValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") saveFileName();
+                  if (e.key === "Escape") { setEditingName(false); setNameValue(file.name); }
+                }}
+                onBlur={saveFileName}
+                className="w-full rounded-md bg-secondary px-3 py-1.5 text-xl font-semibold outline-none"
+              />
+            ) : (
+              <div className="group flex items-center gap-2">
+                <h1 className="text-xl font-semibold truncate">{file.name}</h1>
+                <button
+                  onClick={() => setEditingName(true)}
+                  className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground transition-all"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+              </div>
+            )}
             {project && (
               <p className="text-sm text-muted-foreground">
                 in <span className="text-foreground">{project.name}</span>
@@ -206,14 +235,30 @@ const FileDetailPage = () => {
         {previewUrl && (
           <Card>
             <CardContent className="p-4">
-              <img
-                src={previewUrl}
-                alt={file.name}
-                className="mx-auto max-h-80 rounded-md object-contain"
-              />
+              <img src={previewUrl} alt={file.name} className="mx-auto max-h-80 rounded-md object-contain" />
             </CardContent>
           </Card>
         )}
+
+        {/* AI Summary */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-brand" /> AI Summary
+              </CardTitle>
+              <Button size="sm" variant="outline" onClick={summarizeFile} disabled={summarizing}>
+                <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+                {summarizing ? "Analyzing..." : summary ? "Re-summarize" : "Summarize with AI"}
+              </Button>
+            </div>
+          </CardHeader>
+          {summary && (
+            <CardContent>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{summary}</p>
+            </CardContent>
+          )}
+        </Card>
 
         {/* Details */}
         <Card>
@@ -224,21 +269,13 @@ const FileDetailPage = () => {
             <DetailRow icon={FileIcon} label="Name" value={file.name} />
             <DetailRow icon={HardDrive} label="Size" value={formatBytes(file.size)} />
             <DetailRow icon={FileText} label="Type" value={file.type ?? "Unknown"} />
-            <DetailRow
-              icon={Calendar}
-              label="Uploaded"
-              value={new Date(file.created_at).toLocaleString()}
-            />
+            <DetailRow icon={Calendar} label="Uploaded" value={new Date(file.created_at).toLocaleString()} />
             <DetailRow icon={Globe} label="Visibility" value={file.visibility} />
-
-            {/* Public URL */}
             <div className="flex items-start gap-3 pt-1">
               <ExternalLink className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-muted-foreground mb-1">Public URL</p>
-                <code className="block truncate rounded bg-secondary px-2 py-1 text-xs font-mono">
-                  {publicUrl}
-                </code>
+                <code className="block truncate rounded bg-secondary px-2 py-1 text-xs font-mono">{publicUrl}</code>
               </div>
             </div>
           </CardContent>
@@ -274,15 +311,7 @@ const FileDetailPage = () => {
   );
 };
 
-const DetailRow = ({
-  icon: IconComp,
-  label,
-  value,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: string;
-}) => (
+const DetailRow = ({ icon: IconComp, label, value }: { icon: React.ElementType; label: string; value: string }) => (
   <div className="flex items-center gap-3">
     <IconComp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
     <div className="min-w-0 flex-1">

@@ -88,8 +88,6 @@ const AppLayout = ({
             )}
             <nav className="flex items-center gap-1">
               <NavLink to="/app" end className={navLinkClass}>Files</NavLink>
-              <NavLink to="/app/profile" className={navLinkClass}>Profile</NavLink>
-              <NavLink to="/app/settings" className={navLinkClass}>Settings</NavLink>
               <NavLink to="/app/api" className={navLinkClass}>API</NavLink>
               {isAdmin && (
                 <NavLink to="/app/admin" className={navLinkClass}>
@@ -114,6 +112,13 @@ const AppLayout = ({
                 </p>
                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => { window.location.href = "/app/profile"; }}>
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { window.location.href = "/app/settings"; }}>
+                Settings
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut} className="text-destructive">
                 <LogOut className="mr-2 h-4 w-4" /> Sign out
