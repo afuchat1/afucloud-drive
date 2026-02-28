@@ -5,6 +5,7 @@ import AppLayout from "@/components/AppLayout";
 import FileList from "@/components/FileList";
 import AiChatPanel from "@/components/AiChatPanel";
 import { Cloud, FolderOpen, FileIcon, HardDrive, MessageSquare } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 interface OverviewStats {
   projectCount: number;
@@ -65,6 +66,20 @@ const Dashboard = () => {
                 label="Storage"
                 value={`${formatBytes(stats.storageUsed)} / ${formatBytes(stats.storageLimit)}`}
               />
+            </div>
+          )}
+
+          {/* Storage usage bar */}
+          {stats && stats.storageLimit > 0 && (
+            <div className="rounded-lg bg-secondary p-5 space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Storage Usage</span>
+                <span className="font-medium">{((stats.storageUsed / stats.storageLimit) * 100).toFixed(1)}%</span>
+              </div>
+              <Progress value={(stats.storageUsed / stats.storageLimit) * 100} className="h-2" />
+              <p className="text-xs text-muted-foreground">
+                {formatBytes(stats.storageUsed)} used of {formatBytes(stats.storageLimit)}
+              </p>
             </div>
           )}
 
