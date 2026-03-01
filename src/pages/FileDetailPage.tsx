@@ -94,6 +94,14 @@ const FileDetailPage = () => {
     })();
   }, [fileId]);
 
+  const goBack = () => {
+    if (file?.project_id) {
+      navigate(`/app?project=${file.project_id}`);
+    } else {
+      navigate("/app");
+    }
+  };
+
   const copyLink = async () => {
     await navigator.clipboard.writeText(publicUrl);
     setCopied(true);
@@ -113,7 +121,7 @@ const FileDetailPage = () => {
     await supabase.storage.from("project-files").remove([file.storage_path]);
     await supabase.from("files").delete().eq("id", file.id);
     toast({ title: "File deleted" });
-    navigate("/app");
+    navigate(file.project_id ? `/app?project=${file.project_id}` : "/app");
   };
 
   const downloadFile = async () => {
@@ -170,7 +178,7 @@ const FileDetailPage = () => {
         <div className="flex h-full flex-col items-center justify-center gap-4">
           <p className="text-muted-foreground">File not found</p>
           <Button variant="ghost" onClick={() => navigate("/app")}>
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to files
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back
           </Button>
         </div>
       </AppLayout>
@@ -181,7 +189,7 @@ const FileDetailPage = () => {
     <AppLayout showProjects={false}>
       <div className="mx-auto max-w-3xl animate-fade-in space-y-6">
         <button
-          onClick={() => navigate("/app")}
+          onClick={goBack}
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" /> Back to files

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
@@ -23,9 +24,15 @@ const formatBytes = (bytes: number) => {
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const projectFromUrl = searchParams.get("project");
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectFromUrl);
   const [stats, setStats] = useState<OverviewStats | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
+
+  useEffect(() => {
+    if (projectFromUrl) setSelectedProjectId(projectFromUrl);
+  }, [projectFromUrl]);
 
   useEffect(() => {
     if (!user) return;

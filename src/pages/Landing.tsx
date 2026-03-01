@@ -130,7 +130,7 @@ const Landing = () => {
           <p className="mb-3 text-xs font-medium text-muted-foreground/60">Upload example</p>
           <pre className="overflow-x-auto text-sm text-primary-foreground/80">
             <code>{`curl -X POST \\
-  https://cloud.afuchat.com/v1/files/upload \\
+  https://cloud.afuchat.com/api/v1/files/upload \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -F "file=@photo.png" \\
   -F "public=true"`}</code>
@@ -150,8 +150,20 @@ const Landing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="px-6 py-8 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} AfuCloud · cloud.afuchat.com
+      <footer className="border-t border-border px-6 py-10">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 sm:flex-row sm:justify-between">
+          <div className="flex items-center gap-2">
+            <Cloud className="h-4 w-4 text-brand" />
+            <span className="text-sm font-medium">AfuCloud</span>
+          </div>
+          <nav className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+            <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
+            <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+            <a href="mailto:support@afuchat.com" className="hover:text-foreground transition-colors">Contact</a>
+          </nav>
+          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} AfuCloud</p>
+        </div>
       </footer>
     </div>
   );
