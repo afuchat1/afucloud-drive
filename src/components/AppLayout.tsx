@@ -1,5 +1,5 @@
 import { useState, ReactNode } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { Cloud, Menu, X, LogOut, Shield } from "lucide-react";
@@ -33,6 +33,7 @@ const AppLayout = ({
   showProjects = true,
 }: AppLayoutProps) => {
   const { user, signOut, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -113,10 +114,10 @@ const AppLayout = ({
                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => { window.location.href = "/app/profile"; }}>
+              <DropdownMenuItem onClick={() => navigate("/app/profile")}>
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => { window.location.href = "/app/settings"; }}>
+              <DropdownMenuItem onClick={() => navigate("/app/settings")}>
                 Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
