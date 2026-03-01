@@ -14,6 +14,9 @@ import AdminPage from "./pages/AdminPage";
 import PublicFile from "./pages/PublicFile";
 import NotFound from "./pages/NotFound";
 import FileDetailPage from "./pages/FileDetailPage";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
+import AboutPage from "./pages/AboutPage";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +36,9 @@ const App = () => (
             <Route path="/app/api" element={<ProtectedAppRoute><ApiPage /></ProtectedAppRoute>} />
             <Route path="/app/admin" element={<ProtectedAppRoute><AdminPage /></ProtectedAppRoute>} />
             <Route path="/f/:fileId" element={<PublicFile />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
