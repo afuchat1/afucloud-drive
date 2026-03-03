@@ -160,7 +160,7 @@ const Landing = () => {
             <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
             <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
             <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-            <a href="mailto:support@afuchat.com" className="hover:text-foreground transition-colors">Contact</a>
+            <Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link>
           </nav>
           <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} AfuCloud</p>
         </div>
