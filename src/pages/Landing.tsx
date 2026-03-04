@@ -40,11 +40,11 @@ const Landing = () => {
               Start Building <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
-          <a href="#api">
+          <Link to="/about">
             <Button variant="outline" size="lg" className="gap-2 px-8">
-              View API
+              Learn More
             </Button>
-          </a>
+          </Link>
         </div>
       </section>
 
@@ -94,47 +94,41 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* API Section */}
-      <section id="api" className="mx-auto max-w-3xl px-6 py-20">
-        <div className="mb-10 text-center">
-          <h2 className="mb-3 text-2xl font-bold text-foreground sm:text-3xl">Simple API</h2>
-          <p className="text-muted-foreground">One API key per project. Four endpoints. That's it.</p>
+      {/* How it works */}
+      <section className="mx-auto max-w-4xl px-6 py-20">
+        <div className="mb-14 text-center">
+          <h2 className="mb-3 text-2xl font-bold text-foreground sm:text-3xl">Up and running in minutes</h2>
+          <p className="text-muted-foreground">Three steps. No config files. No infrastructure headaches.</p>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid gap-8 sm:grid-cols-3">
           {[
-            { method: "POST", path: "/v1/files/upload", desc: "Upload a file" },
-            { method: "GET", path: "/v1/files", desc: "List all files" },
-            { method: "PATCH", path: "/v1/files/:id", desc: "Update file metadata" },
-            { method: "DELETE", path: "/v1/files/:id", desc: "Delete a file" },
-          ].map((endpoint, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-4 rounded-lg bg-secondary px-5 py-4"
-            >
-              <code className={`rounded px-2 py-0.5 text-xs font-bold ${
-                endpoint.method === "POST" ? "bg-primary/10 text-brand" :
-                endpoint.method === "GET" ? "bg-primary/10 text-brand" :
-                endpoint.method === "PATCH" ? "bg-primary/10 text-brand" :
-                "bg-destructive/10 text-destructive"
-              }`}>
-                {endpoint.method}
-              </code>
-              <code className="flex-1 text-sm font-mono text-foreground">{endpoint.path}</code>
-              <span className="hidden text-sm text-muted-foreground sm:block">{endpoint.desc}</span>
+            { step: "01", title: "Create a project", desc: "Sign up and create your first project in seconds. Each project gets its own isolated storage and API key." },
+            { step: "02", title: "Upload files", desc: "Drag and drop from the dashboard or push via our REST API. We handle storage, CDN, and MIME types." },
+            { step: "03", title: "Share instantly", desc: "Toggle any file public to get a direct link. Embed images, serve downloads, power your apps." },
+          ].map((item) => (
+            <div key={item.step} className="relative rounded-xl border border-border bg-card p-6">
+              <span className="mb-4 block text-4xl font-black text-brand/20">{item.step}</span>
+              <h3 className="mb-2 text-base font-semibold text-foreground">{item.title}</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
             </div>
           ))}
         </div>
+      </section>
 
-        <div className="mt-8 rounded-lg bg-foreground p-5">
-          <p className="mb-3 text-xs font-medium text-muted-foreground/60">Upload example</p>
-          <pre className="overflow-x-auto text-sm text-primary-foreground/80">
-            <code>{`curl -X POST \\
-  https://cloud.afuchat.com/api/v1/files/upload \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -F "file=@photo.png" \\
-  -F "public=true"`}</code>
-          </pre>
+      {/* Social proof / stats */}
+      <section className="border-y border-border bg-secondary/40 py-16">
+        <div className="mx-auto grid max-w-4xl gap-8 px-6 text-center sm:grid-cols-3">
+          {[
+            { value: "99.9%", label: "Uptime SLA" },
+            { value: "<50ms", label: "Avg response time" },
+            { value: "∞", label: "Free public links" },
+          ].map((stat) => (
+            <div key={stat.label}>
+              <p className="text-3xl font-bold text-brand sm:text-4xl">{stat.value}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{stat.label}</p>
+            </div>
+          ))}
         </div>
       </section>
 
