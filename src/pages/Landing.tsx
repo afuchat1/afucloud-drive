@@ -138,12 +138,14 @@ const Landing = () => {
       {/* CTA */}
       <section className="mx-auto max-w-3xl px-6 py-20 text-center">
         <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">Ready to upload?</h2>
-        <p className="mb-8 text-muted-foreground">Free to start. No credit card required.</p>
-        <Link to="/app">
-          <Button size="lg" className="gap-2 px-10">
-            Create Account <ArrowRight className="h-4 w-4" />
-          </Button>
-        </Link>
+        <p className="mb-8 text-muted-foreground">Just $0.98/month for everything. No hidden fees.</p>
+        <div className="flex items-center justify-center gap-4">
+          <Link to="/pricing">
+            <Button size="lg" className="gap-2 px-10">
+              View Pricing <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
       </section>
 
       {/* Footer */}
@@ -154,6 +156,7 @@ const Landing = () => {
             <span className="text-sm font-medium">AfuCloud</span>
           </div>
           <nav className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+            <Link to="/pricing" className="hover:text-foreground transition-colors">Pricing</Link>
             <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
             <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
             <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
