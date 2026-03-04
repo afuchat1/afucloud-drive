@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
-import { Cloud, Upload, Code, Shield, Zap, ArrowRight, Terminal, Globe } from "lucide-react";
+import { Upload, Code, Shield, Zap, ArrowRight, Terminal, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AfuLogo from "@/components/AfuLogo";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const Landing = () => {
   return (
@@ -8,10 +10,11 @@ const Landing = () => {
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 lg:px-12">
         <div className="flex items-center gap-2">
-          <Cloud className="h-6 w-6 text-brand" />
+          <AfuLogo className="h-6 w-6" />
           <span className="text-lg font-semibold tracking-tight">AfuCloud</span>
         </div>
         <div className="flex items-center gap-3">
+          <ThemeSwitcher />
           <Link to="/app">
             <Button variant="ghost" size="sm">Sign In</Button>
           </Link>
@@ -147,7 +150,7 @@ const Landing = () => {
       <footer className="border-t border-border px-6 py-10">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 sm:flex-row sm:justify-between">
           <div className="flex items-center gap-2">
-            <Cloud className="h-4 w-4 text-brand" />
+            <AfuLogo className="h-4 w-4" />
             <span className="text-sm font-medium">AfuCloud</span>
           </div>
           <nav className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">

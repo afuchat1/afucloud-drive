@@ -2,9 +2,11 @@ import { useState, ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import { Cloud, Menu, X, LogOut, Shield } from "lucide-react";
+import { Menu, X, LogOut, Shield } from "lucide-react";
 import ProjectSidebar from "./ProjectSidebar";
 import UserAvatar from "./UserAvatar";
+import AfuLogo from "./AfuLogo";
+import ThemeSwitcher from "./ThemeSwitcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,7 +43,7 @@ const AppLayout = ({
       {/* Desktop Sidebar */}
       <aside className="hidden w-60 flex-shrink-0 flex-col bg-sidebar lg:flex">
         <div className="flex h-14 items-center gap-2 px-5">
-          <Cloud className="h-5 w-5 text-brand" />
+          <AfuLogo className="h-5 w-5" />
           <span className="text-base font-semibold tracking-tight">AfuCloud</span>
         </div>
 
@@ -59,7 +61,7 @@ const AppLayout = ({
           <aside className="relative flex h-full w-72 flex-col bg-background">
             <div className="flex h-14 items-center justify-between px-5">
               <div className="flex items-center gap-2">
-                <Cloud className="h-5 w-5 text-brand" />
+                <AfuLogo className="h-5 w-5" />
                 <span className="text-base font-semibold">AfuCloud</span>
               </div>
               <button onClick={() => setMobileMenuOpen(false)} className="hover-tint rounded-md p-1">
@@ -100,7 +102,9 @@ const AppLayout = ({
             </nav>
           </div>
 
-          <DropdownMenu>
+          <div className="flex items-center gap-2">
+            <ThemeSwitcher />
+            <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="rounded-full ring-offset-background transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                 <UserAvatar />
@@ -126,6 +130,7 @@ const AppLayout = ({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
         </header>
 
         {/* Content */}
