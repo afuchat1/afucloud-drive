@@ -2,7 +2,7 @@ import { useState, ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import { Menu, X, LogOut, Shield } from "lucide-react";
+import { Menu, X, LogOut, Shield, User, Settings } from "lucide-react";
 import ProjectSidebar from "./ProjectSidebar";
 import UserAvatar from "./UserAvatar";
 import AfuLogo from "./AfuLogo";
@@ -24,8 +24,10 @@ interface AppLayoutProps {
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   cn(
-    "rounded-md px-2.5 py-1.5 text-xs sm:text-sm transition-colors duration-150",
-    isActive ? "bg-secondary text-brand" : "text-muted-foreground hover-tint",
+    "rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+    isActive
+      ? "bg-primary/10 text-primary"
+      : "text-muted-foreground hover:bg-muted hover:text-foreground",
   );
 
 const AppLayout = ({
@@ -41,30 +43,30 @@ const AppLayout = ({
   return (
     <div className="flex h-screen bg-background">
       {/* Desktop Sidebar */}
-      <aside className="hidden w-60 flex-shrink-0 flex-col bg-sidebar lg:flex">
-        <div className="flex h-14 items-center gap-2 px-5">
-          <AfuLogo className="h-5 w-5" />
-          <span className="text-base font-semibold tracking-tight">AfuCloud</span>
+      <aside className="hidden w-64 flex-shrink-0 flex-col border-r border-border bg-sidebar lg:flex">
+        <div className="flex h-16 items-center gap-2.5 px-6">
+          <AfuLogo className="h-6 w-6" />
+          <span className="text-base font-bold tracking-tight">AfuCloud</span>
         </div>
 
         {showProjects ? (
           <ProjectSidebar selectedProjectId={selectedProjectId} onSelectProject={onSelectProject} />
         ) : (
-          <div className="px-5 py-3 text-xs uppercase tracking-wider text-muted-foreground">Account</div>
+          <div className="px-6 py-3 text-xs uppercase tracking-wider text-muted-foreground">Account</div>
         )}
       </aside>
 
       {/* Mobile Drawer */}
       {showProjects && mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-foreground/10" onClick={() => setMobileMenuOpen(false)} />
-          <aside className="relative flex h-full w-72 flex-col bg-background">
-            <div className="flex h-14 items-center justify-between px-5">
-              <div className="flex items-center gap-2">
-                <AfuLogo className="h-5 w-5" />
-                <span className="text-base font-semibold">AfuCloud</span>
+          <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
+          <aside className="relative flex h-full w-72 flex-col border-r border-border bg-background shadow-2xl">
+            <div className="flex h-16 items-center justify-between px-6">
+              <div className="flex items-center gap-2.5">
+                <AfuLogo className="h-6 w-6" />
+                <span className="text-base font-bold">AfuCloud</span>
               </div>
-              <button onClick={() => setMobileMenuOpen(false)} className="hover-tint rounded-md p-1">
+              <button onClick={() => setMobileMenuOpen(false)} className="rounded-lg p-1.5 hover:bg-muted transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -82,10 +84,10 @@ const AppLayout = ({
       {/* Main */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="flex h-14 flex-shrink-0 items-center justify-between gap-2 px-4 lg:px-6">
-          <div className="flex items-center gap-2">
+        <header className="flex h-16 flex-shrink-0 items-center justify-between gap-2 border-b border-border px-4 lg:px-6">
+          <div className="flex items-center gap-3">
             {showProjects && (
-              <button onClick={() => setMobileMenuOpen(true)} className="hover-tint rounded-md p-1.5 lg:hidden">
+              <button onClick={() => setMobileMenuOpen(true)} className="rounded-lg p-2 hover:bg-muted transition-colors lg:hidden">
                 <Menu className="h-5 w-5" />
               </button>
             )}
@@ -94,7 +96,7 @@ const AppLayout = ({
               <NavLink to="/app/api" className={navLinkClass}>API</NavLink>
               {isAdmin && (
                 <NavLink to="/app/admin" className={navLinkClass}>
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1.5">
                     <Shield className="h-3.5 w-3.5" /> Admin
                   </span>
                 </NavLink>
@@ -105,36 +107,36 @@ const AppLayout = ({
           <div className="flex items-center gap-2">
             <ThemeSwitcher />
             <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="rounded-full ring-offset-background transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                <UserAvatar />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <div className="px-3 py-2">
-                <p className="text-sm font-medium truncate">
-                  {(user?.user_metadata?.full_name as string) || "User"}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate("/app/profile")}>
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/app/settings")}>
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut} className="text-destructive">
-                <LogOut className="mr-2 h-4 w-4" /> Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="rounded-full ring-offset-background transition-all hover:ring-2 hover:ring-primary/20 hover:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                  <UserAvatar />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5">
+                <div className="px-3 py-2.5">
+                  <p className="text-sm font-semibold truncate">
+                    {(user?.user_metadata?.full_name as string) || "User"}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/app/profile")} className="rounded-lg gap-2 py-2">
+                  <User className="h-4 w-4" /> Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/app/settings")} className="rounded-lg gap-2 py-2">
+                  <Settings className="h-4 w-4" /> Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut} className="rounded-lg gap-2 py-2 text-destructive focus:text-destructive">
+                  <LogOut className="h-4 w-4" /> Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto px-4 pb-6 lg:px-6">{children}</main>
+        <main className="flex-1 overflow-y-auto px-4 py-6 lg:px-8">{children}</main>
       </div>
     </div>
   );
