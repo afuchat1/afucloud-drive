@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Check, Zap } from "lucide-react";
+import { Check, Zap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AfuLogo from "@/components/AfuLogo";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
@@ -35,9 +35,7 @@ const PricingPage = () => {
         status: "active",
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       });
-
       if (error) throw error;
-
       toast({ title: "You're subscribed!", description: "Welcome to AfuCloud Pro." });
     } catch {
       toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
@@ -47,64 +45,77 @@ const PricingPage = () => {
   };
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background overflow-hidden">
       {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-4 lg:px-12">
-        <Link to="/" className="flex items-center gap-2">
-          <AfuLogo className="h-6 w-6" />
-          <span className="text-lg font-semibold tracking-tight">AfuCloud</span>
+      <nav className="relative z-10 flex items-center justify-between px-6 py-5 lg:px-12">
+        <Link to="/" className="flex items-center gap-2.5">
+          <AfuLogo className="h-7 w-7" />
+          <span className="text-lg font-bold tracking-tight">AfuCloud</span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <ThemeSwitcher />
           <Link to="/app">
-            <Button size="sm">Dashboard</Button>
+            <Button size="sm" className="gradient-primary border-0 glow-sm">Dashboard</Button>
           </Link>
         </div>
       </nav>
 
       {/* Pricing */}
-      <section className="mx-auto max-w-lg px-6 py-20 text-center">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-1.5 text-xs font-medium text-brand">
-          <Zap className="h-3 w-3" /> Simple pricing
+      <section className="relative mx-auto max-w-lg px-6 py-24 text-center">
+        {/* Background glow */}
+        <div className="pointer-events-none absolute inset-0 -top-10 flex items-center justify-center">
+          <div className="h-[400px] w-[400px] rounded-full bg-primary/10 blur-[120px]" />
         </div>
-        <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          One plan. Everything included.
-        </h1>
-        <p className="mb-12 text-muted-foreground">
-          No tiers, no hidden fees. Just $0.98/month for the full experience.
-        </p>
 
-        {/* Card */}
-        <div className="mx-auto max-w-sm rounded-2xl bg-card p-8 text-left ring-1 ring-border">
-          <div className="mb-6">
-            <p className="text-sm font-medium text-muted-foreground">Pro Plan</p>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-5xl font-bold tracking-tight text-foreground">$0.98</span>
-              <span className="text-sm text-muted-foreground">/month</span>
-            </div>
+        <div className="relative">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full glass-card px-4 py-2 text-xs font-medium">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full gradient-primary">
+              <Zap className="h-3 w-3 text-primary-foreground" />
+            </span>
+            Simple pricing
           </div>
 
-          <ul className="mb-8 space-y-3">
-            {features.map((f) => (
-              <li key={f} className="flex items-center gap-3 text-sm text-foreground">
-                <Check className="h-4 w-4 flex-shrink-0 text-brand" />
-                {f}
-              </li>
-            ))}
-          </ul>
-
-          <Button
-            className="w-full"
-            size="lg"
-            onClick={handleSubscribe}
-            disabled={loading}
-          >
-            {loading ? "Processing…" : "Get Started"}
-          </Button>
-
-          <p className="mt-4 text-center text-xs text-muted-foreground">
-            Cancel anytime. No questions asked.
+          <h1 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+            One plan. Everything included.
+          </h1>
+          <p className="mb-14 text-muted-foreground">
+            No tiers, no hidden fees. Just $0.98/month for the full experience.
           </p>
+
+          {/* Card */}
+          <div className="mx-auto max-w-sm rounded-2xl border border-border bg-card p-8 text-left transition-all hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5">
+            <div className="mb-6">
+              <p className="text-sm font-semibold text-primary">Pro Plan</p>
+              <div className="mt-2 flex items-baseline gap-1">
+                <span className="text-5xl font-extrabold tracking-tight gradient-text">$0.98</span>
+                <span className="text-sm text-muted-foreground">/month</span>
+              </div>
+            </div>
+
+            <ul className="mb-8 space-y-3.5">
+              {features.map((f) => (
+                <li key={f} className="flex items-center gap-3 text-sm">
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10">
+                    <Check className="h-3 w-3 text-primary" />
+                  </div>
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            <Button
+              className="w-full h-12 rounded-xl gradient-primary border-0 glow-sm text-base font-semibold gap-2"
+              size="lg"
+              onClick={handleSubscribe}
+              disabled={loading}
+            >
+              {loading ? "Processing…" : "Get Started"} {!loading && <ArrowRight className="h-4 w-4" />}
+            </Button>
+
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              Cancel anytime. No questions asked.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -112,8 +123,8 @@ const PricingPage = () => {
       <footer className="border-t border-border px-6 py-10">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 sm:flex-row sm:justify-between">
           <div className="flex items-center gap-2">
-            <AfuLogo className="h-4 w-4" />
-            <span className="text-sm font-medium">AfuCloud</span>
+            <AfuLogo className="h-5 w-5" />
+            <span className="text-sm font-semibold">AfuCloud</span>
           </div>
           <nav className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
             <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
