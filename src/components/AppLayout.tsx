@@ -24,7 +24,7 @@ interface AppLayoutProps {
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   cn(
-    "rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+    "rounded-md px-3 py-2 text-sm font-medium transition-colors",
     isActive
       ? "bg-primary/10 text-primary"
       : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -43,8 +43,8 @@ const AppLayout = ({
   return (
     <div className="flex h-screen bg-background">
       {/* Desktop Sidebar */}
-      <aside className="hidden w-64 flex-shrink-0 flex-col border-r border-border bg-sidebar lg:flex">
-        <div className="flex h-16 items-center gap-2.5 px-6">
+      <aside className="hidden w-64 flex-shrink-0 flex-col border-r border-border bg-card lg:flex">
+        <div className="flex h-14 items-center gap-2.5 px-6 border-b border-border">
           <AfuLogo className="h-6 w-6" />
           <span className="text-base font-bold tracking-tight">AfuCloud</span>
         </div>
@@ -59,14 +59,14 @@ const AppLayout = ({
       {/* Mobile Drawer */}
       {showProjects && mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
-          <aside className="relative flex h-full w-72 flex-col border-r border-border bg-background shadow-2xl">
-            <div className="flex h-16 items-center justify-between px-6">
+          <div className="absolute inset-0 bg-foreground/20" onClick={() => setMobileMenuOpen(false)} />
+          <aside className="relative flex h-full w-72 flex-col border-r border-border bg-background">
+            <div className="flex h-14 items-center justify-between px-6 border-b border-border">
               <div className="flex items-center gap-2.5">
                 <AfuLogo className="h-6 w-6" />
                 <span className="text-base font-bold">AfuCloud</span>
               </div>
-              <button onClick={() => setMobileMenuOpen(false)} className="rounded-lg p-1.5 hover:bg-muted transition-colors">
+              <button onClick={() => setMobileMenuOpen(false)} className="rounded-md p-1.5 hover:bg-muted transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -84,10 +84,10 @@ const AppLayout = ({
       {/* Main */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="flex h-16 flex-shrink-0 items-center justify-between gap-2 border-b border-border px-4 lg:px-6">
+        <header className="flex h-14 flex-shrink-0 items-center justify-between gap-2 border-b border-border px-4 lg:px-6">
           <div className="flex items-center gap-3">
             {showProjects && (
-              <button onClick={() => setMobileMenuOpen(true)} className="rounded-lg p-2 hover:bg-muted transition-colors lg:hidden">
+              <button onClick={() => setMobileMenuOpen(true)} className="rounded-md p-2 hover:bg-muted transition-colors lg:hidden">
                 <Menu className="h-5 w-5" />
               </button>
             )}
@@ -108,11 +108,11 @@ const AppLayout = ({
             <ThemeSwitcher />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="rounded-full ring-offset-background transition-all hover:ring-2 hover:ring-primary/20 hover:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                <button className="rounded-full ring-offset-background transition-colors hover:ring-2 hover:ring-primary/20 hover:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                   <UserAvatar />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5">
+              <DropdownMenuContent align="end" className="w-56 p-1.5">
                 <div className="px-3 py-2.5">
                   <p className="text-sm font-semibold truncate">
                     {(user?.user_metadata?.full_name as string) || "User"}
@@ -120,14 +120,14 @@ const AppLayout = ({
                   <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate("/app/profile")} className="rounded-lg gap-2 py-2">
+                <DropdownMenuItem onClick={() => navigate("/app/profile")} className="gap-2 py-2">
                   <User className="h-4 w-4" /> Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/app/settings")} className="rounded-lg gap-2 py-2">
+                <DropdownMenuItem onClick={() => navigate("/app/settings")} className="gap-2 py-2">
                   <Settings className="h-4 w-4" /> Settings
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={signOut} className="rounded-lg gap-2 py-2 text-destructive focus:text-destructive">
+                <DropdownMenuItem onClick={signOut} className="gap-2 py-2 text-destructive focus:text-destructive">
                   <LogOut className="h-4 w-4" /> Sign out
                 </DropdownMenuItem>
               </DropdownMenuContent>

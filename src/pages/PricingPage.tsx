@@ -3,6 +3,7 @@ import { Check, Zap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AfuLogo from "@/components/AfuLogo";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
+import SEO from "@/components/SEO";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
@@ -26,7 +27,6 @@ const PricingPage = () => {
       toast({ title: "Sign in first", description: "Create an account to subscribe." });
       return;
     }
-
     setLoading(true);
     try {
       const { error } = await supabase.from("subscriptions").insert({
@@ -45,9 +45,16 @@ const PricingPage = () => {
   };
 
   return (
-    <main className="min-h-screen bg-background overflow-hidden">
+    <main className="min-h-screen bg-background">
+      <SEO
+        title="Pricing – AfuCloud Pro Plan $0.98/month"
+        description="AfuCloud Pro plan at just $0.98/month. Unlimited projects, 10GB storage, full API access, public file links, and priority support. No hidden fees. By AfuChat."
+        keywords="AfuCloud pricing, afuchat cloud pricing, cloud storage pricing, cheap cloud storage, developer file hosting price, $0.98 cloud storage, affordable cloud hosting, afuchat pricing"
+        canonical="https://cloud.afuchat.com/pricing"
+      />
+
       {/* Nav */}
-      <nav className="relative z-10 flex items-center justify-between px-6 py-5 lg:px-12">
+      <nav className="flex items-center justify-between px-6 py-5 lg:px-12 border-b border-border">
         <Link to="/" className="flex items-center gap-2.5">
           <AfuLogo className="h-7 w-7" />
           <span className="text-lg font-bold tracking-tight">AfuCloud</span>
@@ -55,67 +62,60 @@ const PricingPage = () => {
         <div className="flex items-center gap-2">
           <ThemeSwitcher />
           <Link to="/app">
-            <Button size="sm" className="gradient-primary border-0 glow-sm">Dashboard</Button>
+            <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">Dashboard</Button>
           </Link>
         </div>
       </nav>
 
       {/* Pricing */}
-      <section className="relative mx-auto max-w-lg px-6 py-24 text-center">
-        {/* Background glow */}
-        <div className="pointer-events-none absolute inset-0 -top-10 flex items-center justify-center">
-          <div className="h-[400px] w-[400px] rounded-full bg-primary/10 blur-[120px]" />
+      <section className="mx-auto max-w-lg px-6 py-24 text-center">
+        <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-medium">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary">
+            <Zap className="h-3 w-3 text-primary-foreground" />
+          </span>
+          Simple pricing
         </div>
 
-        <div className="relative">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full glass-card px-4 py-2 text-xs font-medium">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full gradient-primary">
-              <Zap className="h-3 w-3 text-primary-foreground" />
-            </span>
-            Simple pricing
-          </div>
+        <h1 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+          One plan. Everything included.
+        </h1>
+        <p className="mb-14 text-muted-foreground">
+          No tiers, no hidden fees. Just $0.98/month for the full AfuCloud experience.
+        </p>
 
-          <h1 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            One plan. Everything included.
-          </h1>
-          <p className="mb-14 text-muted-foreground">
-            No tiers, no hidden fees. Just $0.98/month for the full experience.
-          </p>
-
-          {/* Card */}
-          <div className="mx-auto max-w-sm rounded-2xl border border-border bg-card p-8 text-left transition-all hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5">
-            <div className="mb-6">
-              <p className="text-sm font-semibold text-primary">Pro Plan</p>
-              <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-5xl font-extrabold tracking-tight gradient-text">$0.98</span>
-                <span className="text-sm text-muted-foreground">/month</span>
-              </div>
+        {/* Card */}
+        <div className="mx-auto max-w-sm rounded-lg border border-border bg-card p-8 text-left">
+          <div className="mb-6">
+            <p className="text-sm font-semibold text-primary">Pro Plan</p>
+            <div className="mt-2 flex items-baseline gap-1">
+              <span className="text-5xl font-extrabold tracking-tight text-primary">$0.98</span>
+              <span className="text-sm text-muted-foreground">/month</span>
             </div>
-
-            <ul className="mb-8 space-y-3.5">
-              {features.map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10">
-                    <Check className="h-3 w-3 text-primary" />
-                  </div>
-                  {f}
-                </li>
-              ))}
-            </ul>
-
-            <Button
-              className="w-full h-12 rounded-xl gradient-primary border-0 glow-sm text-base font-semibold gap-2"
-              size="lg"
-              onClick={handleSubscribe}
-              disabled={loading}
-            >
-              {loading ? "Processing…" : "Get Started"} {!loading && <ArrowRight className="h-4 w-4" />}
-            </Button>
-
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              Cancel anytime. No questions asked.
-            </p>
           </div>
+
+          <ul className="mb-8 space-y-3.5">
+            {features.map((f) => (
+              <li key={f} className="flex items-center gap-3 text-sm">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10">
+                  <Check className="h-3 w-3 text-primary" />
+                </div>
+                {f}
+              </li>
+            ))}
+          </ul>
+
+          <Button
+            className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 text-base font-semibold gap-2"
+            size="lg"
+            onClick={handleSubscribe}
+            disabled={loading}
+          >
+            {loading ? "Processing…" : "Get Started"} {!loading && <ArrowRight className="h-4 w-4" />}
+          </Button>
+
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            Cancel anytime. No questions asked.
+          </p>
         </div>
       </section>
 
@@ -126,7 +126,7 @@ const PricingPage = () => {
             <AfuLogo className="h-5 w-5" />
             <span className="text-sm font-semibold">AfuCloud</span>
           </div>
-          <nav className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+          <nav className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground" aria-label="Footer">
             <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
             <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
             <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
