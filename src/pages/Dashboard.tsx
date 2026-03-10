@@ -56,7 +56,7 @@ const Dashboard = () => {
       {selectedProjectId ? (
         <FileList projectId={selectedProjectId} />
       ) : (
-        <div className="mx-auto max-w-5xl animate-fade-in space-y-8">
+        <div className="mx-auto max-w-5xl space-y-8">
           {/* Overview heading */}
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
@@ -66,31 +66,21 @@ const Dashboard = () => {
           {/* Stat cards */}
           {stats && (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <StatCard icon={FolderOpen} label="Projects" value={String(stats.projectCount)} color="text-primary" />
-              <StatCard icon={FileIcon} label="Total Files" value={String(stats.fileCount)} color="text-blue-500" />
-              <StatCard
-                icon={HardDrive}
-                label="Storage Used"
-                value={formatBytes(stats.storageUsed)}
-                color="text-emerald-500"
-              />
-              <StatCard
-                icon={TrendingUp}
-                label="Storage Limit"
-                value={formatBytes(stats.storageLimit)}
-                color="text-amber-500"
-              />
+              <StatCard icon={FolderOpen} label="Projects" value={String(stats.projectCount)} />
+              <StatCard icon={FileIcon} label="Total Files" value={String(stats.fileCount)} />
+              <StatCard icon={HardDrive} label="Storage Used" value={formatBytes(stats.storageUsed)} />
+              <StatCard icon={TrendingUp} label="Storage Limit" value={formatBytes(stats.storageLimit)} />
             </div>
           )}
 
           {/* Storage usage bar */}
           {stats && stats.storageLimit > 0 && (
-            <div className="rounded-2xl border border-border bg-card p-6 space-y-3">
+            <div className="rounded-lg border border-border bg-card p-6 space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium">Storage Usage</span>
                 <span className="text-muted-foreground">{((stats.storageUsed / stats.storageLimit) * 100).toFixed(1)}%</span>
               </div>
-              <Progress value={(stats.storageUsed / stats.storageLimit) * 100} className="h-2.5 rounded-full" />
+              <Progress value={(stats.storageUsed / stats.storageLimit) * 100} className="h-2.5" />
               <p className="text-xs text-muted-foreground">
                 {formatBytes(stats.storageUsed)} used of {formatBytes(stats.storageLimit)}
               </p>
@@ -98,8 +88,8 @@ const Dashboard = () => {
           )}
 
           {/* Empty state */}
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 py-20">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card py-20">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-primary/10">
               <Cloud className="h-8 w-8 text-primary" />
             </div>
             <p className="text-lg font-semibold">No project selected</p>
@@ -109,9 +99,9 @@ const Dashboard = () => {
           {/* AI Chat toggle */}
           <button
             onClick={() => setAiOpen(!aiOpen)}
-            className="flex items-center gap-2.5 rounded-xl border border-border bg-card px-5 py-3.5 text-sm font-medium transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/5"
+            className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-5 py-3.5 text-sm font-medium transition-colors hover:border-primary/30"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <MessageSquare className="h-4 w-4 text-primary-foreground" />
             </div>
             {aiOpen ? "Close AI Assistant" : "Ask AI Assistant"}
@@ -124,11 +114,11 @@ const Dashboard = () => {
   );
 };
 
-const StatCard = ({ icon: Icon, label, value, color }: { icon: React.ElementType; label: string; value: string; color: string }) => (
-  <div className="rounded-2xl border border-border bg-card p-5 transition-all hover:shadow-md hover:shadow-primary/5">
+const StatCard = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
+  <div className="rounded-lg border border-border bg-card p-5">
     <div className="flex items-center gap-4">
-      <div className={cn("flex h-11 w-11 items-center justify-center rounded-xl bg-muted", color)}>
-        <Icon className="h-5 w-5" />
+      <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10">
+        <Icon className="h-5 w-5 text-primary" />
       </div>
       <div>
         <p className="text-xs text-muted-foreground">{label}</p>
@@ -137,9 +127,5 @@ const StatCard = ({ icon: Icon, label, value, color }: { icon: React.ElementType
     </div>
   </div>
 );
-
-function cn(...classes: (string | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export default Dashboard;
