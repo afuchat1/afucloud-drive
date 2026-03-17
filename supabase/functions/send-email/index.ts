@@ -75,6 +75,7 @@ const TEMPLATES: Record<string, (data: Record<string, string>) => { subject: str
         <p style="font-size: 15px; line-height: 1.6; color: #555;">${data.message || ""}</p>
         ${data.actionUrl ? `<a href="${data.actionUrl}" style="display: inline-block; margin: 24px 0; padding: 12px 28px; background: #f07316; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">${data.actionLabel || "View"}</a>` : ""}
         <p style="font-size: 13px; color: #999; margin-top: 32px;">— The AfuCloud Team</p>
+        <p style="font-size: 11px; color: #bbb; margin-top: 8px;">AfuChat Technologies Limited</p>
       </div>
     `,
   }),
